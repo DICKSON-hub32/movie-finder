@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from 'react-helmet';
+// import { useNavigate } from 'react-router-dom';
 import Search from "./components/Search";
 import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
-import { getTrendingMovies, updateSearchCount } from "./appwrite";
+// import { getTrendingMovies, updateSearchCount } from "./appwrite";
 import Feedback from "./sections/Feedback";
 import Footer from "./sections/Footer";
 
@@ -21,7 +23,7 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [movieList, setMovieList] = useState([]);
-  const [trendingMovies, setTrendingMovies] = useState([]);
+  // const [trendingMovies, setTrendingMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +31,7 @@ const App = () => {
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState("");
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+  // const navigate = useNavigate();
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 900, [searchTerm]);
 
@@ -70,7 +73,7 @@ const App = () => {
       setMovieList(data.results || []);
 
       if (query && data.results.length > 0) {
-        await updateSearchCount(query, data.results[0]);
+        // await updateSearchCount(query, data.results[0]);
       }
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
@@ -82,8 +85,8 @@ const App = () => {
 
   const loadTrendingMovies = async () => {
     try {
-      const movies = await getTrendingMovies();
-      setTrendingMovies(movies);
+      // const movies = await getTrendingMovies();
+      // setTrendingMovies(movies);
     } catch (error) {
       console.error(`Error fetching trending movies: ${error}`);
     }
@@ -125,15 +128,64 @@ const App = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // const handleTrendingClick = (id) => {
+  //   navigate(`/movie/${id}`);
+  // };
+
+  // Find the selected genre name based on genreId
+  const getSelectedGenreName = () => {
+    if (!selectedGenre) return "";
+    const genre = genres.find((g) => g.id === parseInt(selectedGenre));
+    return genre ? genre.name : "";
+  };
+
   return (
     <main className={`relative min-h-screen ${theme === "dark" ? "dark bg-black text-white" : "bg-gray-100 text-gray-900"}`}>
+      <Helmet>
+        <title>Home | Movie Finder - Discover Trending and Popular Films</title>
+        <meta
+          name="description"
+          content="Discover trending movies and hidden gems with MovieFinder. Updated daily with the latest trailers, ratings, and reviews."
+        />
+        <meta
+          name="keywords"
+          content="movie finder, trending movies, popular films, movie search, cinema genres"
+        />
+        <link rel="canonical" href="https://moviefinder-teckish.com/" />
+        <meta property="og:title" content="Home | Movie Finder - Discover Trending and Popular Films" />
+        <meta
+          name="og:description"
+          content={`Discover trending and popular movies on Movie Finder. Search for ${debouncedSearchTerm || 'the latest films'} and explore by genre.`}
+        />
+        <meta property="og:url" content="https://moviefinder-teckish.com/" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Home | Movie Finder - Discover Trending and Popular Films" />
+        <meta
+          name="twitter:description"
+          content={`Discover trending and popular movies on Movie Finder. Search for ${debouncedSearchTerm || 'the latest films'}.`}
+        />
+      </Helmet>
       <div className="pattern" />
       <div className="wrapper max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <header className="relative">
-          <img src="./hero.png" alt="Hero Banner" className="w-full h-auto" />
+          <img src="./hero.png" alt="Hero Banner - Movie Finder" className="w-full h-auto rounded-lg" />
+          <div></div>
           <h1 className="text-3xl sm:text-4xl font-bold text-center mt-4">
             Your Perfect <span className="text-gradient">Movies</span>, Found Fast
           </h1>
+          <section className="mt-6 text-center max-w-4xl mx-auto px-4">
+  <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+    Welcome to Movie Finder, your premier destination to discover a world of cinematic treasures. This platform is meticulously designed to serve as your ultimate guide to trending films, offering a seamless experience where movie enthusiasts can explore the latest releases and timeless classics. With a focus on delivering top-tier content, Movie Finder combines cutting-edge technology with a passion for cinema to bring you an unparalleled movie-watching journey right at your fingertips.
+  </p>
+  <p className={`text-lg mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+    Dive into an expansive collection of cinematic masterpieces as Movie Finder provides in-depth reviews, personalized recommendations, and the latest industry news to enhance your movie-watching experience. Whether you're seeking blockbuster hits or hidden gems, our curated selection ensures you stay ahead of the curve with trending films that captivate and inspire. This hub is tailored to cater to every cinephile, offering insights that enrich your understanding and enjoyment of the silver screen.
+  </p>
+  <p className={`text-lg mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+    Explore beyond the surface with Movie Finder, where each visit unveils new opportunities to engage with the world of cinema. From detailed analyses of upcoming movie releases to expert-curated lists of must-watch films, we are committed to keeping you informed with the latest industry news. Enhance your movie-watching experience with our personalized recommendations, designed to match your unique tastes, making Movie Finder your go-to resource for all things film-related.
+  </p>
+  <div></div>
+</section>
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6">
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <div className="flex items-center gap-4">
@@ -169,27 +221,51 @@ const App = () => {
           </div>
         </header>
 
-        {trendingMovies.length > 0 && (
+        {/* {trendingMovies.length > 0 && (
           <section className="mt-12">
-            <div className="mb-6">
+            <div className="mb-6 flex justify-between items-center">
               <h2 className="text-2xl font-bold">Trending Movies</h2>
             </div>
             <ul className="flex overflow-x-auto gap-4 pb-4 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:overflow-x-hidden">
               {trendingMovies.map((movie) => (
-                <li key={movie.$id} className="flex-shrink-0 w-36">
+                <li key={movie.$id} className="flex-shrink-0 w-36 cursor-pointer" onClick={() => handleTrendingClick(movie.tmdb_id)}>
                   <img
                     src={movie.poster_url}
-                    alt={movie.searchTerm}
-                    className="w-36 h-48 object-cover rounded-lg"
+                    alt={`${movie.searchTerm} - Trending movie`}
+                    className="w-36 h-48 object-cover rounded-lg hover:opacity-90 transition-opacity"
                   />
                 </li>
               ))}
             </ul>
           </section>
-        )}
+        )} */}
+
+        {/* Medium Rectangle Ad after Trending Movies */}
+        {/* <div className="bg-gray-700 p-3 rounded-lg text-center mt-6 mb-6">
+          <p className="text-gray-200 font-semibold">Advertisement</p>
+          <div
+            className="bg-gray-600 h-48 flex items-center justify-center mt-2"
+            style={{ maxWidth: '300px', margin: '0 auto' }}
+          >
+            <p className="text-gray-300">Google Ad Placeholder (300x250)</p>
+          </div>
+        </div> */}
+
+        {/* Leaderboard Ad above main content */}
+        {/* <div className="bg-gray-700 p-3 rounded-lg text-center mt-12 mb-6">
+          <p className="text-gray-200 font-semibold">Advertisement</p>
+          <div
+            className="bg-gray-600 h-24 flex items-center justify-center mt-2"
+            style={{ maxWidth: '728px', margin: '0 auto' }}
+          >
+            <p className="text-gray-300">Google Ad Placeholder (728x90)</p>
+          </div>
+        </div> */}
 
         <section className="all-movies mt-8">
-          <h2 className="text-2xl font-bold mb-6">All Movies</h2>
+          <h2 className="text-2xl font-bold mb-6">
+            All Movies{selectedGenre ? ` - ${getSelectedGenreName()}` : ""}
+          </h2>
           {isLoading ? (
             <Spinner />
           ) : errorMessage ? (
@@ -219,6 +295,18 @@ const App = () => {
             </button>
           </div>
         </section>
+
+        {/* Medium Rectangle Ad after movie grid */}
+        <div></div>
+        {/* <div className="bg-gray-700 p-3 rounded-lg text-center mt-6 mb-6">
+          <p className="text-gray-200 font-semibold">Advertisement</p>
+          <div
+            className="bg-gray-600 h-48 flex items-center justify-center mt-2"
+            style={{ maxWidth: '300px', margin: '0 auto' }}
+          >
+            <p className="text-gray-300">Google Ad Placeholder (300x250)</p>
+          </div>
+        </div> */}
 
         <Feedback />
         <Footer />

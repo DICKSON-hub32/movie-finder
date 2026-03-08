@@ -3,6 +3,17 @@ import { useParams, Link } from "react-router-dom";
 import { saveRating } from "./appwrite";
 import Feedback from "./sections/Feedback";
 import Footer from "./sections/Footer";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaLinkedinIn,
+  FaWhatsapp,
+  FaTelegramPlane,
+  FaPinterestP,
+  FaRedditAlien,
+  FaInstagram,
+  FaTiktok,
+} from "react-icons/fa";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -131,7 +142,15 @@ const MovieDetails = () => {
             ← Back to Home
           </Link>
         </div>
-
+        <div className="bg-gray-700 p-3 rounded-lg text-center mb-6">
+            {/* <p className="text-gray-200 font-semibold">Advertisement</p> */}
+            <div
+              className="bg-gray-600 h-24 flex items-center justify-center mt-2"
+              style={{ maxWidth: '728px', margin: '0 auto' }}
+            >
+              {/* <p className="text-gray-300">Google Ad Placeholder (728x90)</p> */}
+            </div>
+          </div>
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/3">
             <img
@@ -188,27 +207,103 @@ const MovieDetails = () => {
                 </div>
               </div>
             )}
-                        <div className="mt-4 flex gap-2">
-              <a
-                href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(movie.title)} on My Movie Site!&url=${window.location.href}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Share on X
-              </a>
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-1 bg-blue-700 text-white rounded hover:bg-blue-800"
-              >
-                Share on Facebook
-              </a>
-            </div>
+            <div><h3 className="text-lg text-white font-semibold mb-1">Share this movie</h3>
+            
+<div className="mt-2 flex flex-wrap gap-3">
+  <a
+    href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(movie.title)}!&url=${window.location.href}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on X"
+    className="text-white bg-blue-500 hover:bg-blue-600 p-2 rounded-full"
+  >
+    <FaTwitter />
+  </a>
+  <a
+    href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on Facebook"
+    className="text-white bg-blue-700 hover:bg-blue-800 p-2 rounded-full"
+  >
+    <FaFacebookF />
+  </a>
+  <a
+    href={`https://www.linkedin.com/sharing/share-offsite/?url=${window.location.href}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on LinkedIn"
+    className="text-white bg-blue-900 hover:bg-blue-950 p-2 rounded-full"
+  >
+    <FaLinkedinIn />
+  </a>
+  <a
+    href={`https://api.whatsapp.com/send?text=Check out ${encodeURIComponent(movie.title)}! ${window.location.href}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on WhatsApp"
+    className="text-white bg-green-500 hover:bg-green-600 p-2 rounded-full"
+  >
+    <FaWhatsapp />
+  </a>
+  <a
+    href={`https://t.me/share/url?url=${window.location.href}&text=Check out ${encodeURIComponent(movie.title)}!`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on Telegram"
+    className="text-white bg-blue-400 hover:bg-blue-500 p-2 rounded-full"
+  >
+    <FaTelegramPlane />
+  </a>
+  <a
+    href={`https://pinterest.com/pin/create/button/?url=${window.location.href}&description=${encodeURIComponent(movie.title)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on Pinterest"
+    className="text-white bg-red-500 hover:bg-red-600 p-2 rounded-full"
+  >
+    <FaPinterestP />
+  </a>
+  <a
+    href={`https://www.reddit.com/submit?url=${window.location.href}&title=${encodeURIComponent(movie.title)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on Reddit"
+    className="text-white bg-orange-500 hover:bg-orange-600 p-2 rounded-full"
+  >
+    <FaRedditAlien />
+  </a>
+  <a
+    href="https://www.instagram.com/"
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on Instagram"
+    className="text-white bg-pink-500 hover:bg-pink-600 p-2 rounded-full"
+  >
+    <FaInstagram />
+  </a>
+  <a
+    href="https://www.tiktok.com/"
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Share on TikTok"
+    className="text-white bg-black hover:bg-gray-800 p-2 rounded-full"
+  >
+    <FaTiktok />
+  </a>
+  </div>
+</div>
           </div>
         </div>
-
+        <div className="bg-gray-700 p-3 mt-6 rounded-lg text-center mb-6">
+            {/* <p className="text-gray-200 font-semibold">Advertisement</p> */}
+            <div
+              className="bg-gray-600 h-24 flex items-center justify-center mt-2"
+              style={{ maxWidth: '728px', margin: '0 auto' }}
+            >
+              {/* <p className="text-gray-300">Google Ad Placeholder (728x90)</p> */}
+            </div>
+          </div>
         <section className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">Feedback</h2>
           <div className="mb-4">

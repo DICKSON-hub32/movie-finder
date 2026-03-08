@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { saveFavorite, removeFavorite, getUserFavorites, saveRating } from "../appwrite";
 
 const MovieCard = ({
-  movie: { id, title, vote_average, poster_path, release_date, original_language }
+  movie: { id, title, vote_average, poster_path, release_date, original_language, overview }
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [rating, setRating] = useState(0);
@@ -67,7 +67,7 @@ const MovieCard = ({
           }
           alt={title}
         />
-        <button
+        {/* <button
           onClick={(e) => {
             e.preventDefault();
             handleFavorite();
@@ -88,11 +88,14 @@ const MovieCard = ({
               d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
             />
           </svg>
-        </button>
+        </button> */}
       </Link>
       <div className="mt-4">
         <Link to={`/movie/${id}`}>
           <h3 className="hover:underline">{title}</h3>
+          <p className="text-sm text-gray-400 mt-1 line-clamp-3">
+            {overview || "No description available."}
+          </p>
         </Link>
         <div className="content">
           <div className="rating">
