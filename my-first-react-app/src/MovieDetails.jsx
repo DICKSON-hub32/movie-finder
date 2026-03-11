@@ -231,7 +231,7 @@ const MovieDetails = () => {
                 rel="noopener noreferrer"
                 className="inline-block px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
-                Watch Now!
+                Watch Now
               </a>
               <p>
                 <span className="text-gray-400 text-sm italic">
