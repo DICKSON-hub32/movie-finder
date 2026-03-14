@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const BlogPost = require("../models/BlogPost");
+const mongoose = require("mongoose");
 const generateBlogFromMovie = require("../utils/generateBlog");
 const generateTrendingBlogs = require("../jobs/generateBlogs"); // For manual trigger
 const { slugify, buildUniqueSlug } = require("../utils/slugify");
@@ -54,7 +55,15 @@ router.post("/view/:identifier", async (req, res) => {
   try {
     const { identifier } = req.params;
     const blog = await BlogPost.findOne({ slug: identifier });
-    const target = blog ? { slug: identifier } : { _id: identifier };
+    const target = blog
+      ? { slug: identifier }
+      : mongoose.Types.ObjectId.isValid(identifier)
+        ? { _id: identifier }
+        : null;
+
+    if (!target) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
 
     await BlogPost.findOneAndUpdate(target, { $inc: { views: 1 } });
     res.status(200).json({ message: "View counted" });
@@ -67,9 +76,10 @@ router.post("/view/:identifier", async (req, res) => {
 router.get("/:identifier", async (req, res) => {
   try {
     const { identifier } = req.params;
-    const blog =
-      (await BlogPost.findOne({ slug: identifier })) ||
-      (await BlogPost.findById(identifier));
+    let blog = await BlogPost.findOne({ slug: identifier });
+    if (!blog && mongoose.Types.ObjectId.isValid(identifier)) {
+      blog = await BlogPost.findById(identifier);
+    }
 
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
