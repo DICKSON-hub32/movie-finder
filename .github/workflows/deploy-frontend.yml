@@ -21,6 +21,23 @@ jobs:
         with:
           node-version: 18
 
+      - name: Create frontend env file
+        working-directory: ./my-first-react-app
+        run: |
+          cat <<EOF > .env.local
+          VITE_TMDB_API_KEY=${{ secrets.VITE_TMDB_API_KEY }}
+          VITE_APPWRITE_PROJECT_ID=${{ secrets.VITE_APPWRITE_PROJECT_ID }}
+          VITE_APPWRITE_DATABASE_ID=${{ secrets.VITE_APPWRITE_DATABASE_ID }}
+          VITE_APPWRITE_COLLECTION_ID=${{ secrets.VITE_APPWRITE_COLLECTION_ID }}
+          VITE_APPWRITE_FAVORITES_COLLECTION_ID=${{ secrets.VITE_APPWRITE_FAVORITES_COLLECTION_ID }}
+          VITE_APPWRITE_RATINGS_COLLECTION_ID=${{ secrets.VITE_APPWRITE_RATINGS_COLLECTION_ID }}
+          VITE_EMAILJS_SERVICE_ID=${{ secrets.VITE_EMAILJS_SERVICE_ID }}
+          VITE_EMAILJS_TEMPLATE_ID=${{ secrets.VITE_EMAILJS_TEMPLATE_ID }}
+          VITE_EMAILJS_PUBLIC_KEY=${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
+          VITE_WATCHMODE_API_KEY=${{ secrets.VITE_WATCHMODE_API_KEY }}
+          VITE_JUSTWATCH_COUNTRY=${{ secrets.VITE_JUSTWATCH_COUNTRY }}
+          EOF
+
       - name: Install frontend dependencies
         working-directory: ./my-first-react-app
         run: npm ci
