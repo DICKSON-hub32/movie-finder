@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { saveFavorite, removeFavorite, getUserFavorites, saveRating } from "../appwrite";
+import { getUserFavorites, saveRating } from "../appwrite";
+import { buildMovieSlug } from "../utils/slugify";
 
 const MovieCard = ({
-  movie: { id, title, vote_average, poster_path, release_date, original_language, overview }
+  movie: {
+    id,
+    title,
+    vote_average,
+    poster_path,
+    release_date,
+    original_language,
+    overview
+  }
 }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [, setIsFavorite] = useState(false);
   const [rating, setRating] = useState(0);
   const [showRatingInput, setShowRatingInput] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -23,21 +32,7 @@ const MovieCard = ({
     checkFavorite();
   }, [id]);
 
-  const handleFavorite = async () => {
-    setErrorMessage("");
-    try {
-      if (isFavorite) {
-        await removeFavorite(id);
-        setIsFavorite(false);
-      } else {
-        await saveFavorite({ movieId: id, title, poster_path });
-        setIsFavorite(true);
-      }
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-      setErrorMessage("Failed to update favorite. Please try again.");
-    }
-  };
+  // Favorite handling removed until UI is re-enabled.
 
   const handleRatingSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +53,7 @@ const MovieCard = ({
 
   return (
     <div className="movie-card">
-      <Link to={`/movie/${id}`} className="relative">
+      <Link to={`/movie/${buildMovieSlug(title, id)}`} className="relative">
         <img
           src={
             poster_path
@@ -91,7 +86,7 @@ const MovieCard = ({
         </button> */}
       </Link>
       <div className="mt-4">
-        <Link to={`/movie/${id}`}>
+        <Link to={`/movie/${buildMovieSlug(title, id)}`}>
           <h3 className="hover:underline">{title}</h3>
           <p className="text-sm text-gray-400 mt-1 line-clamp-3">
             {overview || "No description available."}
@@ -105,7 +100,9 @@ const MovieCard = ({
           <span>•</span>
           <p className="lang">{original_language}</p>
           <span>•</span>
-          <p className="year">{release_date ? release_date.split("-")[0] : "N/A"}</p>
+          <p className="year">
+            {release_date ? release_date.split("-")[0] : "N/A"}
+          </p>
         </div>
         <div className="flex gap-2 mt-4">
           <button

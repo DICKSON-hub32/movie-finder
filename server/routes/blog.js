@@ -3,6 +3,7 @@ const router = express.Router();
 const BlogPost = require("../models/BlogPost");
 const generateBlogFromMovie = require("../utils/generateBlog");
 const generateTrendingBlogs = require("../jobs/generateBlogs"); // For manual trigger
+const { slugify, buildUniqueSlug } = require("../utils/slugify");
 const genai = require("@google/generative-ai");
 const genAI = new genai.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -48,21 +49,36 @@ router.post("/generate-trending", async (req, res) => {
   }
 });
 
-// Increment blog views when a user opens a blog.
-router.post("/view/:id", async (req, res) => {
+// Increment blog views when a user opens a blog (slug or id).
+router.post("/view/:identifier", async (req, res) => {
   try {
-    await BlogPost.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+    const { identifier } = req.params;
+    const blog = await BlogPost.findOne({ slug: identifier });
+    const target = blog ? { slug: identifier } : { _id: identifier };
+
+    await BlogPost.findOneAndUpdate(target, { $inc: { views: 1 } });
     res.status(200).json({ message: "View counted" });
   } catch (err) {
     res.status(500).json({ error: "Failed to count view" });
   }
 });
 
-// GET blog post by ID for Editing
-router.get("/:id", async (req, res) => {
+// GET blog post by slug or ID (supports legacy URLs)
+router.get("/:identifier", async (req, res) => {
   try {
-    const blog = await BlogPost.findById(req.params.id);
+    const { identifier } = req.params;
+    const blog =
+      (await BlogPost.findOne({ slug: identifier })) ||
+      (await BlogPost.findById(identifier));
+
     if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+    if (!blog.slug) {
+      const slugBase = slugify(blog.title);
+      blog.slug = await buildUniqueSlug(BlogPost, slugBase, blog._id);
+      await blog.save();
+    }
+
     res.json(blog);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -72,10 +88,19 @@ router.get("/:id", async (req, res) => {
 // Update blog post by ID
 router.put("/:id", async (req, res) => {
   try {
+    const existingBlog = await BlogPost.findById(req.params.id);
+    if (!existingBlog)
+      return res.status(404).json({ message: "Blog not found" });
+
+    const nextTitle = req.body.title || existingBlog.title;
+    const slugBase = slugify(nextTitle);
+    const slug = await buildUniqueSlug(BlogPost, slugBase, existingBlog._id);
+
     const updatedBlog = await BlogPost.findByIdAndUpdate(
       req.params.id,
       {
-        title: req.body.title,
+        title: nextTitle,
+        slug,
         summary: req.body.summary,
         article: req.body.article,
         advice: req.body.advice,
@@ -86,8 +111,6 @@ router.put("/:id", async (req, res) => {
       { new: true } // Return the updated blog
     );
 
-    if (!updatedBlog)
-      return res.status(404).json({ message: "Blog not found" });
     res.json(updatedBlog);
   } catch (err) {
     res.status(500).json({ message: err.message });
